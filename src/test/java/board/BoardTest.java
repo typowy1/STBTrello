@@ -11,6 +11,7 @@ import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class BoardTest extends BaseTest {
+    //https://github.com/bkita/stb_trello_demo
 
     @Test
     public void creatNewBoard() {

@@ -5,6 +5,8 @@ import io.restassured.specification.RequestSpecification;
 import org.junit.jupiter.api.BeforeAll;
 
 public class BaseTest {
+    //https://github.com/bkita/stb_trello_demo
+
     //pola protected wtedy klasa dziecko bedzie mogła z nich kożystać
     protected static final String BASE_URL = "https://api.trello.com/1/";
     protected static final String BOARDS = "boards";
