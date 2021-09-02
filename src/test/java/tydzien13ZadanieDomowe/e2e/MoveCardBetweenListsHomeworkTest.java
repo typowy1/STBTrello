@@ -1,32 +1,29 @@
-package e2e;
+package tydzien13ZadanieDomowe.e2e;
 
-import base.BaseTest;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
+import tydzien13ZadanieDomowe.baseForHomework.BaseForHomeworkTest;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)//odpalanie testów pokoleji
-public class MoveCardBetweenLists extends BaseTest {
-    //https://github.com/bkita/stb_trello_demo
-
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+public class MoveCardBetweenListsHomeworkTest extends BaseForHomeworkTest {
     private static String boardId;
     private static String firstListId;
     private static String secondListId;
-    private static String firstCardId;
+    private static String cardId;
 
     @Test
-    @Order(1)//odpalanie testów pokoleji
-    public void createNewBoard() {
+    @Order(1)
+    public void createBoardTest() {
         Response response = given()
                 .spec(reqSpecification)
-                .queryParam("name", "My e2e board")
+                .queryParam("name", "Test")
                 .queryParam("defaultLists", false)
                 .when()
                 .post(BASE_URL + BOARDS)
@@ -35,19 +32,19 @@ public class MoveCardBetweenLists extends BaseTest {
                 .extract()
                 .response();
 
-//        dobrą praktyką jest sprządtanie po testach, utworzylismy board to go tez usowamy
-        JsonPath json = response.jsonPath();
-        assertThat(json.getString("name")).isEqualTo("My e2e board");
-        boardId = json.get("id");
+        JsonPath jsonPath = response.jsonPath();
+        assertThat(jsonPath.getString("name")).isEqualTo("Test");
+
+        boardId = jsonPath.get("id");
     }
 
     @Test
     @Order(2)
-    public void createFirstList() {
+    public void createFirstListTest() {
         Response response = given()
                 .spec(reqSpecification)
-                .queryParam("name", "My first List")
                 .queryParam("idBoard", boardId)
+                .queryParam("name", "First list")
                 .when()
                 .post(BASE_URL + LISTS)
                 .then()
@@ -55,18 +52,19 @@ public class MoveCardBetweenLists extends BaseTest {
                 .extract()
                 .response();
 
-        JsonPath json = response.jsonPath();
-        Assertions.assertThat(json.getString("name")).isEqualTo("My first List");
-        firstListId = json.get("id");
+        JsonPath jsonPath = response.jsonPath();
+        assertThat(jsonPath.getString("name")).isEqualTo("First list");
+
+        firstListId = jsonPath.get("id");
     }
 
     @Test
     @Order(3)
-    public void createSecondList() {
+    public void createSecondtListTest() {
         Response response = given()
                 .spec(reqSpecification)
-                .queryParam("name", "My second List")
                 .queryParam("idBoard", boardId)
+                .queryParam("name", "Second list")
                 .when()
                 .post(BASE_URL + LISTS)
                 .then()
@@ -74,20 +72,19 @@ public class MoveCardBetweenLists extends BaseTest {
                 .extract()
                 .response();
 
-        JsonPath json = response.jsonPath();
-        Assertions.assertThat(json.getString("name")).isEqualTo("My second List");
-        secondListId = json.get("id");
+        JsonPath jsonPath = response.jsonPath();
+        assertThat(jsonPath.getString("name")).isEqualTo("Second list");
+
+        secondListId = jsonPath.get("id");
     }
 
     @Test
     @Order(4)
-    public void addCardToFirstList() {
-//        https://api.trello.com/1/cards
+    public void createCardInFirstListTest() {
         Response response = given()
                 .spec(reqSpecification)
-                .queryParam("idBoard", boardId)
                 .queryParam("idList", firstListId)
-                .queryParam("name", "My e2e card")
+                .queryParam("name", "First card")
                 .when()
                 .post(BASE_URL + CARDS)
                 .then()
@@ -95,33 +92,33 @@ public class MoveCardBetweenLists extends BaseTest {
                 .extract()
                 .response();
 
-        JsonPath json = response.jsonPath();
-        assertThat(json.getString("name")).isEqualTo("My e2e card");
-        firstCardId = json.get("id");
+        JsonPath jsonPath = response.jsonPath();
+        assertThat(jsonPath.getString("name")).isEqualTo("First card");
+
+        cardId = jsonPath.get("id");
     }
 
     @Test
     @Order(5)
-    public void moveCardToSecondList() {
-//        https://api.trello.com/1/cards/{id}
+    public void moveCardToSecondListTest() {
         Response response = given()
                 .spec(reqSpecification)
                 .queryParam("idList", secondListId)
                 .when()
-                .put(BASE_URL + CARDS + "/" + firstCardId)
+                .put(BASE_URL + CARDS + "/" + cardId)
                 .then()
                 .statusCode(200)
                 .extract()
                 .response();
 
-        JsonPath json = response.jsonPath();
-        assertThat(json.getString("idList")).isEqualTo(secondListId);
+        JsonPath jsonPath = response.jsonPath();
+        assertThat(jsonPath.getString("idList")).isEqualTo(secondListId);
     }
 
     @Test
     @Order(6)
-    public void deleteBoard() {
-        given()
+    public void deleteBoardTest() {
+        Response response = given()
                 .spec(reqSpecification)
                 .when()
                 .delete(BASE_URL + BOARDS + "/" + boardId)
